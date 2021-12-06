@@ -1,6 +1,7 @@
 import math
 
 class Vector:
+    '''Simple class for a 2D vector'''
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -22,3 +23,8 @@ class Vector:
 
 def dot_product(vec1, vec2):
     return vec1.x * vec2.x + vec1.y * vec2.y
+
+
+def projection(vec1, vec2):
+    '''Project vec1 onto vec2'''
+    return vec2.scale(dot_product(vec1, vec2) / vec2.magnitude()**2)
