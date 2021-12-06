@@ -18,3 +18,7 @@ class Vector:
     def add(self, vector):
         self.x += vector.x
         self.y += vector.y
+
+
+def dot_product(vec1, vec2):
+    return vec1.x * vec2.x + vec1.y * vec2.y
