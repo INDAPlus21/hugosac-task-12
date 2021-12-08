@@ -1,75 +1,55 @@
 import pygame as pg
+from vectors import Vector, vector_from_points
 
-
-class StartScreen:
-    def __init__(self):
-        self.next = 'start-screen'
-        self.running = True
-
-    def start(self):
-        self.running = True
-
-    def update(self, keys, screens):
-        if keys[pg.K_1]:
-            self.next = screens['spring']
-            self.running = False
-    
-    def draw(self):
-        pass
-
-
-class Spring:
-    def __init__(self):
-        self.next = 'start-screen'
-        self.running = True
-
-    def start(self):
-        self.running = True
-    
-    def update(self):
-        pass
-
+# Constants
 FPS = 60
 TITLE = 'Simple Physics'
+WIDTH = 800
+HEIGHT = 600
+RADIUS = 25
+TOP_SPEED = 10
+BALL_COLOR = (234, 97, 100)
+BACKGROUND = (37, 39, 42)
 
-pg.init()
-WIN = pg.display.set_mode((800,600))
-pg.display.set_caption(TITLE)
+def update(pos, vel, acc):
+    '''Update positions'''
+    mouse = Vector(*pg.mouse.get_pos())
+    acc = vector_from_points(mouse, pos)
+    acc.normalize()
+    acc.scale(0.5)
+    vel.add(acc) 
+    pos.add(vel)
 
-clock = pg.time.Clock()
-running = True
-keys = pg.key.get_pressed()
-screens = {
-    'start-screen': StartScreen(),
-    'spring': Spring()
-}
-screen = screens['start-screen']
+def draw(win, pos):
+    '''Draw everything'''
+    win.fill(BACKGROUND)
+    pg.draw.circle(win, BALL_COLOR, pos.pos(), RADIUS)
 
-def run(clock, running, keys, screens, screen):
+def main():
     '''Runs main loop'''
+    pg.init()
+    win = pg.display.set_mode((WIDTH, HEIGHT))
+    pg.display.set_caption(TITLE)
+    clock = pg.time.Clock()
+    running = True
+
+    pos = Vector(WIDTH / 2, HEIGHT / 2)
+    vel = Vector(0,0)
+    vel.set_limit(TOP_SPEED)
+    acc = Vector(0,0)
 
     while running:
-        # Events
+        # Main loop
         for event in pg.event.get():
             # Check for closing window
             if event.type == pg.QUIT:
                 running = False
-            elif event.type == pg.KEYDOWN:
-                keys = pg.key.get_pressed()
-            elif event.type == pg.KEYUP:
-                keys = pg.key.get_pressed()
-        
 
-        # Update
-        if not screen.running:
-            screen = screens[screen.next]
-            screen.start() 
-            
-        screen.update(keys)
+        update(pos, vel, acc)
+        draw(win, pos)
 
-        # Draw
-        screen.draw(WIN)
         pg.display.update()
-
         clock.tick(FPS)
 
+if __name__ == '__main__':
+    main()
